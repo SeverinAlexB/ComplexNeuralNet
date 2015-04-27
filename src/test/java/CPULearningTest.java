@@ -55,7 +55,7 @@ public class CPULearningTest {
     }
     @Test
     public void iterationTest() throws Exception {
-        ComplexDataset andSet = getXorDataset();
+        ComplexDataset andSet = getAndDataset();
         FeedForwardNet net = new FeedForwardNet();
         net.addLayer(3, ActivationFunction.Sigmoid);
         //net.addLayer(2, ActivationFunction.Sigmoid);

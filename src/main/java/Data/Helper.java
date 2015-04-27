@@ -10,11 +10,17 @@ import org.apache.commons.math3.linear.MatrixUtils;
 public class Helper {
     public static double max_value = 2;
     public static Complex transform(double real){
-        //Complex c = new Complex(0,(real/max_value)*(Math.PI/2));
-        //return c.exp().conjugate();
         return new Complex(real);
     }
     public static double transform(Complex c){
+        return c.getReal();
+    }
+    public static Complex transformE(double real){
+        double img = (real/max_value)*(Math.PI/2);
+        Complex c = new Complex(real,img);
+        return c.exp();
+    }
+    public static double transformE(Complex c){
         //c = c.log();
         //return (c.getImaginary()/(Math.PI/2)) *max_value;
         return c.getReal();
@@ -30,6 +36,20 @@ public class Helper {
         Complex[] ret = new Complex[vector.length];
         for(int i = 0; i < ret.length; i++) {
             ret[i] = transform(vector[i]);
+        }
+        return MatrixUtils.createFieldVector(ret);
+    }
+    public static double[] transformE(FieldVector<Complex> vector){
+        double[] ret = new double[vector.getDimension()];
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = transformE(vector.getEntry(i));
+        }
+        return ret;
+    }
+    public static FieldVector transformE(double[] vector){
+        Complex[] ret = new Complex[vector.length];
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = transformE(vector[i]);
         }
         return MatrixUtils.createFieldVector(ret);
     }

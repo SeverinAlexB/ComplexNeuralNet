@@ -109,11 +109,10 @@ public class LayerPropagation {
         return delta;
     }
 
-    private final static Complex one = new Complex(1);
     protected FieldVector<Complex> OneMinus(FieldVector<Complex> vector1){
         FieldVector<Complex> res = vector1.copy();
         for(int i = 0; i < vector1.getDimension(); i ++) {
-            res.setEntry(i, one.subtract(vector1.getEntry(i)));
+            res.setEntry(i, Complex.ONE.subtract(vector1.getEntry(i)));
         }
         return res;
     }

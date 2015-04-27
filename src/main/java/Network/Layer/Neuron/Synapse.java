@@ -40,11 +40,11 @@ public class Synapse {
     }
 
     private Complex getRandomWeight() {
-        double min = 0; double max = 1;
+        double min = 0; double max = 0.9;
         double real = getRandom(min,max);
         double img = getRandom(min,max);
-        return new Complex(real,img);
-        //return Helper.transform(ran);
+        //return new Complex(real,img);
+        return Helper.transform(real);
     }
 
     private Random random = new Random();

@@ -38,18 +38,4 @@ public class ComplexDataset {
         if(pairs.size() == 0) throw new SeviException("Dataset is empty");
         return pairs.get(0).getOutput().getDimension();
     }
-    public Complex[][] getInputMatrix(){
-        Complex[][] matrix = new Complex[pairs.size()][];
-        for(int i =0; i < pairs.size(); i++) {
-            matrix[i] = pairs.get(i).getInput().toArray();
-        }
-        return matrix;
-    }
-    public Complex[][] getOutputMatrix() {
-        Complex[][] matrix = new Complex[pairs.size()][];
-        for(int i =0; i < pairs.size(); i++) {
-            matrix[i] = pairs.get(i).getOutput().toArray();
-        }
-        return matrix;
-    }
 }
