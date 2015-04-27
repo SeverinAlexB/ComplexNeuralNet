@@ -97,11 +97,14 @@ public class LayerPropagation {
 
     protected FieldVector<Complex> calcError(FieldMatrix<Complex> weights, FieldVector<Complex> lastdelta){
         FieldMatrix<Complex> transposed = weights.transpose();
+        transposed = conjugate(transposed);
         return transposed.operate(lastdelta);
     }
     protected FieldVector<Complex> calcDelta(FieldVector<Complex> error, FieldVector<Complex> tempOutput){
-        FieldVector<Complex> delta = OneMinus(tempOutput);
-        delta = tempOutput.ebeMultiply(delta);
+        //FieldVector<Complex> out = tempOutput;
+       FieldVector<Complex> out = conjugate(tempOutput);
+        FieldVector<Complex> delta = OneMinus(out);
+        delta = out.ebeMultiply(delta);
         delta = error.ebeMultiply(delta);
         return delta;
     }

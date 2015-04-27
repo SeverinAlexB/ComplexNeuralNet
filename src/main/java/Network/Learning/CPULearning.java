@@ -65,14 +65,12 @@ public class CPULearning {
         FieldVector<Complex> out, error;
         for(int i = 0; i < count; i++) {
             id = random.nextInt(dataset.getPairs().size());
-
-                ComplexPair pair = dataset.getPairs().get(id);
-                FieldVector<Complex> verrauscht = addRauschen(pair.getInput());
-                out = calculation.calculate(verrauscht);
-                error = pair.getOutput().subtract(out);
-                this.setError(error);
-                propagation.propagate(error, calculation.getLayerResults());
-
+            ComplexPair pair = dataset.getPairs().get(id);
+            FieldVector<Complex> verrauscht = addRauschen(pair.getInput());
+            out = calculation.calculate(pair.getInput());
+            error = pair.getOutput().subtract(out);
+            this.setError(error);
+            propagation.propagate(error, calculation.getLayerResults());
         }
     }
     private void setError(FieldVector<Complex> error){

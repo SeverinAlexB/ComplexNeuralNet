@@ -13,6 +13,9 @@ import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldVector;
 import org.junit.Test;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
 /**
  * Created by Severin on 25.04.2015.
  */
@@ -52,9 +55,10 @@ public class CPULearningTest {
     }
     @Test
     public void iterationTest() throws Exception {
-        ComplexDataset andSet = getAndDataset();
+        ComplexDataset andSet = getXorDataset();
         FeedForwardNet net = new FeedForwardNet();
         net.addLayer(3, ActivationFunction.Sigmoid);
+        //net.addLayer(2, ActivationFunction.Sigmoid);
         net.addLayer(1, ActivationFunction.Sigmoid);
 
         SingleThreadCalculation calculation = new SingleThreadCalculation(net);
@@ -64,12 +68,15 @@ public class CPULearningTest {
         CPULearning learning = new CPULearning(net,calculation,propagation);
         learning.setDataset(andSet);
 
-        for(int i = 0; i < 10; i++) {
-            learning.iteration(10000);
+        ArrayList<String> weight = new ArrayList<String>(10000);
+        for(int i = 0; i < 100; i++) {
+            if(i==70) propagation.setEta(0.2);
+            learning.iteration(1000);
+            weight.add(net.getLayers().get(0).getNeurons().get(0).getOutputs().get(0).getWeight().toString());
             //LayerTest.out(net.getLayers().get(0).getMatrixtoNextLayer());
              System.out.println("Error: " + learning.getError());
         }
-
+        this.wirte(weight);
         double[] testinput = {0,0,1};
         System.out.println("0,0:");
         testen(testinput, calculation);
@@ -95,5 +102,13 @@ public class CPULearningTest {
             System.out.print(out[i]);
         }
         System.out.println();
+    }
+    public void wirte(ArrayList<String> list) throws Exception{
+        PrintWriter writer = new PrintWriter("C://temp//weightlist.txt", "UTF-8");
+        writer.println("The first line");
+        for(String s:list){
+            writer.println(s);
+        }
+        writer.close();
     }
 }
