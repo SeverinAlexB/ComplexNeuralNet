@@ -1,3 +1,4 @@
+import Network.Calculation.LayerResult;
 import Network.Calculation.SingleThreadCalculation;
 import Network.FeedForwardNet;
 import Network.Layer.Neuron.ActivationFunction;
@@ -21,25 +22,7 @@ public class SingleThreadCalculationTest extends SingleThreadCalculation {
     public SingleThreadCalculationTest() {
         super(new FeedForwardNet());
     }
-    private FieldMatrix<Complex> getInitializedMatrix() {
-        Complex[][] matrix = new Complex[3][2];
-        matrix[0][0] = new Complex(1);
-        matrix[0][1] = new Complex(2);
-        matrix[1][0] = new Complex(3);
-        matrix[1][1] = new Complex(4);
-        matrix[2][0] = new Complex(5);
-        matrix[2][1] = new Complex(6);
-        return MatrixUtils.createFieldMatrix(matrix);
-    }
-    private FieldVector<Complex> getInitializedVector() {
-        Complex[] vector = new Complex[2];
-        vector[0] = new Complex(1);
-        vector[1] = new Complex(2);
-        return MatrixUtils.createFieldVector(vector);
-    }
-
-    @Test
-    public void calculationTest() throws SeviException {
+    public FeedForwardNet getInizializedNet() throws SeviException {
         FeedForwardNet net = new FeedForwardNet();
         net.addLayer(2, ActivationFunction.Sigmoid);
         net.addLayer(2, ActivationFunction.Sigmoid);
@@ -55,14 +38,44 @@ public class SingleThreadCalculationTest extends SingleThreadCalculation {
         Neuron input2 = net.getLayers().get(0).getNeurons().get(1);
         input2.getOutputs().get(0).setWeight(new Complex(0.1));
         input2.getOutputs().get(1).setWeight(new Complex(0.2));
+        return net;
+    }
+    private FieldVector<Complex> getInitializedVector() {
+        Complex[] vector = new Complex[2];
+        vector[0] = new Complex(1);
+        vector[1] = new Complex(2);
+        return MatrixUtils.createFieldVector(vector);
+    }
+
+    @Test
+    public void calculationTest() throws SeviException {
+        FeedForwardNet net = getInizializedNet();
 
         Complex[] input = {new Complex(1), new Complex(2)};
         FieldVector<Complex> in = MatrixUtils.createFieldVector(input);
         SingleThreadCalculation calc = new SingleThreadCalculation(net);
         FieldVector<Complex> out = calc.calculate(in);
 
-        assertEquals(0.7685247, calc.getLayerResults().get(0).getOutput().getEntry(0).getReal(),0.00001);
-        assertEquals(0.7858349, calc.getLayerResults().get(0).getOutput().getEntry(1).getReal(),0.00001);
         assertEquals(0.717956, out.getEntry(0).getReal(),0.00001);
+    }
+    @Test
+    public void layerResultTest() throws SeviException {
+        FeedForwardNet net = getInizializedNet();
+
+        Complex[] input = {new Complex(1), new Complex(2)};
+        FieldVector<Complex> in = MatrixUtils.createFieldVector(input);
+        SingleThreadCalculation calc = new SingleThreadCalculation(net);
+        calc.calculate(in);
+
+        LayerResult lr1 = calc.getLayerResults().get(0);
+        assertEquals(0.7685247, lr1.getOutput().getEntry(0).getReal(),0.00001);
+        assertEquals(0.7858349, lr1.getOutput().getEntry(1).getReal(), 0.00001);
+        assertEquals(1, lr1.getInput().getEntry(0).getReal(),0.00001);
+        assertEquals(2, lr1.getInput().getEntry(1).getReal(), 0.00001);
+
+        LayerResult lr2 = calc.getLayerResults().get(1);
+        assertEquals(0.717956, lr2.getOutput().getEntry(0).getReal(),0.00001);
+        assertEquals(0.7685247, lr2.getInput().getEntry(0).getReal(),0.00001);
+        assertEquals(0.7858349, lr2.getInput().getEntry(1).getReal(),0.00001);
     }
 }

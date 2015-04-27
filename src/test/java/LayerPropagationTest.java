@@ -44,22 +44,18 @@ public class LayerPropagationTest extends LayerPropagation {
 
     @Test
     public void calcWeightDeltaTest()  {
-        double eta = 0.1;
-        Complex[] d = {new Complex(0.1),new Complex(0.2)};
-        Complex[] in = {new Complex(0.1),new Complex(0.2), new Complex(0.3)};
+        double eta = 1;
+        Complex[] d = {new Complex(0.0571124)};
+        Complex[] in = {new Complex(0.768525),new Complex(0.785835)};
         FieldVector<Complex> delta = MatrixUtils.createFieldVector(d);
         FieldVector<Complex> input = MatrixUtils.createFieldVector(in);
         FieldMatrix<Complex> weightDiff =  this.calcWeightDelta(delta,input,eta);
 
-        assertEquals(2,weightDiff.getRowDimension());
-        assertEquals(3,weightDiff.getColumnDimension());
+        assertEquals(1,weightDiff.getRowDimension());
+        assertEquals(2,weightDiff.getColumnDimension());
 
-        assertEquals(0.001,weightDiff.getEntry(0,0).getReal(),0.00001);
-        assertEquals(0.002,weightDiff.getEntry(0,1).getReal(),0.00001);
-        assertEquals(0.003,weightDiff.getEntry(0,2).getReal(),0.00001);
-
-        assertEquals(0.002,weightDiff.getEntry(1,0).getReal(),0.00001);
-        assertEquals(0.004,weightDiff.getEntry(1,1).getReal(),0.00001);
-        assertEquals(0.006, weightDiff.getEntry(1, 2).getReal(), 0.00001);
+        assertEquals(0.0438923,weightDiff.getEntry(0,0).getReal(),0.00001);
+        assertEquals(0.0448809,weightDiff.getEntry(0,1).getReal(),0.00001);
     }
+
 }

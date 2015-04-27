@@ -17,6 +17,10 @@ public class LayerPropagation {
     private Layer layer;
     private LayerResult result;
 
+
+
+    private FieldMatrix<Complex> weightDiff;
+
     public LayerPropagation(FieldVector<Complex> error, Layer layer, LayerResult result) throws SeviException{
         this.error = error;
         this.result = result;
@@ -31,6 +35,43 @@ public class LayerPropagation {
     }
     protected LayerPropagation(){}
 
+    public FieldVector<Complex> getError() {
+        return error;
+    }
+    public void setError(FieldVector<Complex> error) {
+        this.error = error;
+    }
+    public FieldVector<Complex> getDelta() {
+        return delta;
+    }
+    public void setDelta(FieldVector<Complex> delta) {
+        this.delta = delta;
+    }
+    public FieldVector<Complex> getLastdelta() {
+        return lastdelta;
+    }
+    public void setLastdelta(FieldVector<Complex> lastdelta) {
+        this.lastdelta = lastdelta;
+    }
+    public Layer getLayer() {
+        return layer;
+    }
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
+    public LayerResult getResult() {
+        return result;
+    }
+    public void setResult(LayerResult result) {
+        this.result = result;
+    }
+    public FieldMatrix<Complex> getWeightDiff() {
+        return weightDiff;
+    }
+    public void setWeightDiff(FieldMatrix<Complex> weightDiff) {
+        this.weightDiff = weightDiff;
+    }
+
     public void calcDeltas() throws SeviException {
         if(layer.getNext() != null){
             this.error = calcError(conjugate(layer.getMatrixtoNextLayer()), lastdelta);
@@ -40,7 +81,7 @@ public class LayerPropagation {
         //this.delta = calcDelta(error,this.result.getOutput());
     }
     public void ajustWeights( double eta) throws SeviException{
-        FieldMatrix<Complex> weightDiff = calcWeightDelta(this.delta,result.getInput(),eta);
+        this.weightDiff = calcWeightDelta(this.delta,result.getInput(),eta);
         FieldMatrix<Complex> newWeights = layer.getBefore().getMatrixtoNextLayer().add(weightDiff);
         layer.getBefore().setMatrixtoNextLayer(newWeights);
     }
