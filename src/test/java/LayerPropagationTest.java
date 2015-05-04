@@ -1,3 +1,5 @@
+import Network.Calculation.LayerResult;
+import Network.Layer.Neuron.ActivationFunction;
 import Network.Learning.Propagation.LayerPropagation;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldMatrix;
@@ -18,17 +20,21 @@ public class LayerPropagationTest extends LayerPropagation {
     @Test
     public void calcDeltaTest() {
         Complex[] err = {new Complex(1), new Complex(2)};
-        Complex[] out = {new Complex(3), new Complex(4)};
-        Complex[] sh = {new Complex(-6), new Complex(-24)};
+        Complex[] netin = {new Complex(3), new Complex(4)};
+        Complex[] sh = {new Complex(0.0451766), new Complex(0.0353254)};
 
         FieldVector<Complex> error = MatrixUtils.createFieldVector(err);
-        FieldVector<Complex> output = MatrixUtils.createFieldVector(out);
+        FieldVector<Complex> neti = MatrixUtils.createFieldVector(netin);
         FieldVector<Complex> should = MatrixUtils.createFieldVector(sh);
 
-        FieldVector<Complex> result = this.calcDelta(error, output);
+        LayerResult layerResult = new LayerResult();
+        layerResult.setNetin(neti);
+        layerResult.setActivationFunction(ActivationFunction.Sigmoid);
+        FieldVector<Complex> result = this.calcDelta(error, layerResult);
 
-        System.out.println(should.equals(result));
-        assertEquals(should,result);
+
+        assertEquals(sh[0].getReal(), result.getEntry(0).getReal(),0.0001);
+        assertEquals(sh[1].getReal(), result.getEntry(1).getReal(),0.0001);
     }
     @Test
     public void calcErrorTest() {

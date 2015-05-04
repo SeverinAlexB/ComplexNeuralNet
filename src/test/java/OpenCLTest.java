@@ -19,7 +19,7 @@ import static org.bridj.Pointer.allocateFloats;
  */
 public class OpenCLTest  {
     int n = 100000000;
-    @Test
+    //@Test
     public void Test()throws Exception {
 
         ArrayList<CLDevice> devices = new ArrayList<CLDevice>();

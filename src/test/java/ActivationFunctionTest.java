@@ -16,12 +16,4 @@ public class ActivationFunctionTest {
         Complex should = new Complex(0.731059);
         assertEquals(res.getReal(),should.getReal(),0.0001);
     }
-    //@Test
-    public void sigmoidDerivativTest() {
-        ActivationFunction func = ActivationFunction.Sigmoid;
-        Complex c = new Complex(1);
-        Complex res = func.calc(c,2);
-        Complex should = new Complex(-0.0908577);
-        assertEquals(res.getReal(),should.getReal(),0.0001);
-    }
 }

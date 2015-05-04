@@ -77,8 +77,8 @@ public class LayerPropagation {
             this.error = calcError(conjugate(layer.getMatrixtoNextLayer()), lastdelta);
             //this.error = calcError(layer.getMatrixtoNextLayer(), lastdelta);
         }
-        this.delta = calcDelta(error,conjugate(this.result.getOutput()));
-        //this.delta = calcDelta(error,this.result.getTarget());
+        this.delta = calcDelta(error,this.result);
+
     }
     public void ajustWeights( double eta) throws SeviException{
         this.weightDiff = calcWeightDelta(this.delta,result.getInput(),eta);
@@ -100,19 +100,19 @@ public class LayerPropagation {
         transposed = transposed.transpose();
         return transposed.operate(lastdelta);
     }
-    protected FieldVector<Complex> calcDelta(FieldVector<Complex> error, FieldVector<Complex> tempOutput){
-        //FieldVector<Complex> out = tempOutput;
-       FieldVector<Complex> out = conjugate(tempOutput);
-        FieldVector<Complex> delta = OneMinus(out);
-        delta = out.ebeMultiply(delta);
+    protected FieldVector<Complex> calcDelta(FieldVector<Complex> error, LayerResult result){
+        FieldVector<Complex> netint = conjugate(result.getNetin());
+        netint = result.getActivationFunction().calc(netint);
+        FieldVector<Complex> delta = OneMinus(netint);
+        delta = netint.ebeMultiply(delta);
         delta = error.ebeMultiply(delta);
         return delta;
     }
 
-    protected FieldVector<Complex> OneMinus(FieldVector<Complex> vector1){
-        FieldVector<Complex> res = vector1.copy();
-        for(int i = 0; i < vector1.getDimension(); i ++) {
-            res.setEntry(i, Complex.ONE.subtract(vector1.getEntry(i)));
+    protected FieldVector<Complex> OneMinus(FieldVector<Complex> vector){
+        FieldVector<Complex> res = vector.copy();
+        for(int i = 0; i < vector.getDimension(); i ++) {
+            res.setEntry(i, Complex.ONE.subtract(vector.getEntry(i)));
         }
         return res;
     }

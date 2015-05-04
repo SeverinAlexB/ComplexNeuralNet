@@ -95,7 +95,7 @@ public class CPULearningTest {
     private void testen(double[] testinput, ICalculationStrategy calculation) throws SeviException{
 
         FieldVector<Complex> output = calculation.calculate(Helper.transform(testinput));
-        double[] out = Helper.transform(output);
+        double[] out = Helper.transformE(output);
 
         for(int i = 0; i < out.length; i++) {
             System.out.print(out[i]);

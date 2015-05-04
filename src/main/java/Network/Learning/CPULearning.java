@@ -68,6 +68,7 @@ public class CPULearning {
             ComplexPair pair = dataset.getPairs().get(id);
             //FieldVector<Complex> verrauscht = addRauschen(pair.getInput());
             out = calculation.calculate(pair.getInput());
+            //error = out.subtract(pair.getTarget());
             error = pair.getTarget().subtract(out);
             this.setError(error);
             propagation.propagate(error, calculation.getLayerResults());
@@ -76,7 +77,7 @@ public class CPULearning {
     private void setError(FieldVector<Complex> error){
         double sum = 0.0;
         for(int i = 0; i < error.getDimension(); i++) {
-            double temp = Helper.transform(error.getEntry(i));
+            double temp = Helper.transformE(error.getEntry(i));
             sum += temp*temp;
         }
         this.sqrerror = sum;
