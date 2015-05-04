@@ -1,10 +1,6 @@
-import Data.ComplexDataset;
-import Data.Pairs.ComplexPair;
 import Data.Pairs.RealPair;
 import Data.RealDataset;
 import Network.SeviException;
-import org.apache.commons.math3.complex.Complex;
-import org.apache.commons.math3.linear.MatrixUtils;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -23,6 +19,6 @@ public class DatasetTest {
         RealDataset rd2 = rd.transform().transform();
 
         assertEquals(rd.getPairs().get(0).getInput()[0],rd2.getPairs().get(0).getInput()[0], 0.0001);
-        assertEquals(rd.getPairs().get(0).getOutput()[0],rd.getPairs().get(0).getOutput()[0],0.0001);
+        assertEquals(rd.getPairs().get(0).getTarget()[0],rd.getPairs().get(0).getTarget()[0],0.0001);
     }
 }

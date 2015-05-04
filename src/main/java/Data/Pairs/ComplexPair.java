@@ -1,7 +1,6 @@
 package Data.Pairs;
 
 import Data.Helper;
-import Data.Pairs.RealPair;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldVector;
 
@@ -10,10 +9,10 @@ import org.apache.commons.math3.linear.FieldVector;
  */
 public class ComplexPair {
     private FieldVector<Complex> input;
-    private FieldVector<Complex> output;
-    public ComplexPair(FieldVector<Complex> input, FieldVector<Complex> output){
+    private FieldVector<Complex> target;
+    public ComplexPair(FieldVector<Complex> input, FieldVector<Complex> target){
         setInput(input);
-        setOutput(output);
+        setTarget(target);
     }
     public FieldVector<Complex> getInput() {
         return input;
@@ -23,17 +22,17 @@ public class ComplexPair {
         this.input = input;
     }
 
-    public FieldVector<Complex> getOutput() {
-        return output;
+    public FieldVector<Complex> getTarget() {
+        return target;
     }
 
-    public void setOutput(FieldVector<Complex> output) {
-        this.output = output;
+    public void setTarget(FieldVector<Complex> target) {
+        this.target = target;
     }
 
     public RealPair transform() {
-        double[] input = Helper.transform(this.input);
-        double[] output = Helper.transform(this.output);
+        double[] input = Helper.transformE(this.input);
+        double[] output = Helper.transformE(this.target);
         return new RealPair(input,output);
     }
 

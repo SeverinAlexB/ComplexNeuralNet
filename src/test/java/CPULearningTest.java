@@ -70,7 +70,6 @@ public class CPULearningTest {
 
         ArrayList<String> weight = new ArrayList<String>(10000);
         for(int i = 0; i < 100; i++) {
-            if(i==70) propagation.setEta(0.2);
             learning.iteration(1000);
             weight.add(net.getLayers().get(0).getNeurons().get(0).getOutputs().get(0).getWeight().toString());
             //LayerTest.out(net.getLayers().get(0).getMatrixtoNextLayer());

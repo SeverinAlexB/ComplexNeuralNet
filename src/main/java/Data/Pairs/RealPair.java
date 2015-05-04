@@ -3,17 +3,16 @@ package Data.Pairs;
 import Data.Helper;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldVector;
-import org.apache.commons.math3.linear.MatrixUtils;
 
 /**
  * Created by Severin on 24.04.2015.
  */
 public class RealPair {
     private double[] input;
-    private double[] output;
-    public RealPair(double[] input, double[] output){
+    private double[] target;
+    public RealPair(double[] input, double[] target){
         setInput(input);
-        setOutput(output);
+        setTarget(target);
     }
     public double[] getInput() {
         return input;
@@ -23,17 +22,17 @@ public class RealPair {
         this.input = input;
     }
 
-    public double[] getOutput() {
-        return output;
+    public double[] getTarget() {
+        return target;
     }
 
-    public void setOutput(double[] output) {
-        this.output = output;
+    public void setTarget(double[] target) {
+        this.target = target;
     }
 
     public ComplexPair transform() {
-        FieldVector<Complex> input = Helper.transform(this.input);
-        FieldVector<Complex> output = Helper.transform(this.output);
+        FieldVector<Complex> input = Helper.transformE(this.input);
+        FieldVector<Complex> output = Helper.transformE(this.target);
         return new ComplexPair(input,output);
     }
 

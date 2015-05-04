@@ -32,6 +32,6 @@ public class PairTransformatinTest {
         RealPair r2 = c.transform();
 
         assertEquals(r.getInput()[0],r2.getInput()[0], 0.0001);
-        assertEquals(r.getOutput()[0],r2.getOutput()[0],0.0001);
+        assertEquals(r.getTarget()[0],r2.getTarget()[0],0.0001);
     }
 }

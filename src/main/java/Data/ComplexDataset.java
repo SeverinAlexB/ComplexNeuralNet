@@ -1,9 +1,7 @@
 package Data;
 
 import Data.Pairs.ComplexPair;
-import Data.Pairs.RealPair;
 import Network.SeviException;
-import org.apache.commons.math3.complex.Complex;
 
 import java.util.ArrayList;
 
@@ -17,7 +15,7 @@ public class ComplexDataset {
     }
     public void add(ComplexPair pair) throws SeviException{
         if(pairs.size() > 0){
-                if(pair.getInput().getDimension() != getInputLength() || pair.getOutput().getDimension() != getOutputLength()) {
+                if(pair.getInput().getDimension() != getInputLength() || pair.getTarget().getDimension() != getOutputLength()) {
                     throw new SeviException("Input or output length isn't equal to the dataset");
                 }
         }
@@ -36,6 +34,6 @@ public class ComplexDataset {
     }
     public int getOutputLength() throws SeviException {
         if(pairs.size() == 0) throw new SeviException("Dataset is empty");
-        return pairs.get(0).getOutput().getDimension();
+        return pairs.get(0).getTarget().getDimension();
     }
 }

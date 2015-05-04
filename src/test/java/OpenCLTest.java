@@ -18,8 +18,10 @@ import static org.bridj.Pointer.allocateFloats;
  * Created by Severin on 21.04.2015.
  */
 public class OpenCLTest  {
-    //@Test
+    int n = 100000000;
+    @Test
     public void Test()throws Exception {
+
         ArrayList<CLDevice> devices = new ArrayList<CLDevice>();
         // try to list all platform and devices
         System.out.println("-Available plattforms:");
@@ -31,9 +33,10 @@ public class OpenCLTest  {
             devices.add(device);
         }
 
-        CLDevice[] devicess = new CLDevice[devices.size()];
+        CLDevice[] devicess = new CLDevice[1];
+        devicess[0] = devices.get(0);
         for(int i = 0; i < devices.size(); i++) {
-            devicess[i] = devices.get(i);
+           // devicess[i] = devices.get(i);
         }
 
         CLContext context = JavaCL.createContext(null,devicess);
@@ -43,8 +46,9 @@ public class OpenCLTest  {
         }
         CLQueue queue = context.createDefaultQueue();
         ByteOrder byteOrder = context.getByteOrder();
-
-        int n = 1024;
+        int localsize = 512;
+        int blockscount = n/200000;
+        int globalsize = ((blockscount)/localsize + 1) *localsize;
         Pointer<Float>
                 aPtr = allocateFloats(n).order(byteOrder),
                 bPtr = allocateFloats(n).order(byteOrder),
@@ -69,18 +73,22 @@ public class OpenCLTest  {
 
         // Get and call the kernel :
         CLKernel addFloatsKernel = program.createKernel("add_floats");
-        addFloatsKernel.setArgs(a, b);
+        addFloatsKernel.setArgs(a, b,n);
+
 
         long start = System.currentTimeMillis();
-        CLEvent addEvt = addFloatsKernel.enqueueNDRange(queue, new int[]{n});
-        for(int i = 0; i < 1000; i++){
-            if(i%50==0) {
-                addEvt.waitFor();
-                System.out.println("Command " + i);
-            }
-            addEvt = addFloatsKernel.enqueueNDRange(queue, new int[]{n},addEvt);
+        CLEvent addEvt = null;
+
+        try {
+            addEvt = addFloatsKernel.enqueueNDRange(queue, new int[]{globalsize},new int[]{localsize});
+            start = System.currentTimeMillis();
+            addEvt.waitFor();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(System.getenv("CL_LOG_ERRORS"));
         }
-        addEvt.waitFor();
+
+
 
         long end = System.currentTimeMillis();
         Pointer<Float> outPtr = a.read(queue, addEvt); // blocks until add_floats finished
@@ -89,7 +97,7 @@ public class OpenCLTest  {
         for (int i = 0; i < 10 && i < n; i++)
             System.out.println("out[" + i + "] = " + outPtr.get(i));
 
-        System.out.println("Time: " + (end-start) + "ms");
+        System.out.println("GPU Time: " + (end-start) + "ms");
 
         boolean iswrong = false;
         for(int i = 0; i < n; i++){
@@ -102,8 +110,28 @@ public class OpenCLTest  {
             }
 
         }
+        aPtr.release();
+        bPtr.release();
+        oPtr.release();
         if(iswrong) System.out.println("Test wrong");
+        else System.out.println("Successfull");
+    }
+    @Test
+    public void CPuTest() {
+        float[] a = new float[n];
+        float[] b = new float[n];
+        float[] c = new float[n];
+        for(int i = 0; i < n; i++){
+            a[i] = i;
+            b[i] = i;
+        }
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < n; i++){
+            c[i] = a[i] + b[i];
+        }
 
+        long end = System.currentTimeMillis();
+        System.out.println("Time: " + (end-start) + "ms");
     }
 
 }

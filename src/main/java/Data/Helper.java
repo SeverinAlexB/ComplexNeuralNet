@@ -15,15 +15,16 @@ public class Helper {
     public static double transform(Complex c){
         return c.getReal();
     }
+
     public static Complex transformE(double real){
         double img = (real/max_value)*(Math.PI/2);
-        Complex c = new Complex(real,img);
+        Complex c = new Complex(0,img);
         return c.exp();
     }
     public static double transformE(Complex c){
-        //c = c.log();
-        //return (c.getImaginary()/(Math.PI/2)) *max_value;
-        return c.getReal();
+        c = c.log();
+        return (c.getImaginary()/(Math.PI/2)) *max_value;
+        //return c.getReal();
     }
     public static double[] transform(FieldVector<Complex> vector){
         double[] ret = new double[vector.getDimension()];
