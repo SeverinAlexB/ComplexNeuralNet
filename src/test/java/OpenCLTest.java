@@ -5,6 +5,7 @@ import org.bridj.Pointer;
 import static com.nativelibs4java.util.IOUtils.readText;
 import static java.lang.Math.*;
 import org.junit.Test;
+import org.omg.PortableInterceptor.ACTIVE;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -18,9 +19,54 @@ import static org.bridj.Pointer.allocateFloats;
  * Created by Severin on 21.04.2015.
  */
 public class OpenCLTest  {
-    int n = 100000000;
-    //@Test
+    final int A_ROWS = 2000;
+    final int A_COLS = 300;
+    final int B_ROWS = A_COLS;
+    final int B_COLS = 1000;
+    final int C_ROWS = A_ROWS;
+    final int C_COLS = B_COLS;
+    public Float[][] getA() {
+        Float[][] a = new Float[A_ROWS][A_COLS];
+        for(int row = 0; row < A_ROWS; row++) {
+            for(int col = 0; col < A_COLS; col++) {
+                a[row][col] = new Float(row + col);
+            }
+        }
+        return a;
+    }
+    public Float[][] getB() {
+        Float[][] b = new Float[B_ROWS][B_COLS];
+        for(int row = 0; row < B_ROWS; row++) {
+            for(int col = 0; col < B_COLS; col++) {
+                b[row][col] = new Float(row + col);
+            }
+        }
+        return b;
+    }
+    public Float[][] getC(boolean filled) {
+        if(!filled) return new Float[C_ROWS][C_COLS];
+
+        Float[][] a = getA();
+        Float[][] b = getB();
+        Float[][] c = new Float[C_ROWS][C_COLS];
+
+        for(int row = 0; row < C_ROWS; row++) {
+            for(int col = 0; col < C_COLS; col++) {
+                float sum = 0;
+                for(int i = 0; i < A_COLS;i++){
+                    sum += a[row][i] * b[i][col];
+                }
+                c[row][col] = sum;
+             }
+        }
+        return c;
+    }
+    @Test
     public void Test()throws Exception {
+        long start = 0,ende = 0;
+        Float[][] ma = getA();
+        Float[][] mb = getB();
+        Float[][] mc = getC(false);
 
         ArrayList<CLDevice> devices = new ArrayList<CLDevice>();
         // try to list all platform and devices
@@ -44,27 +90,34 @@ public class OpenCLTest  {
         for (CLDevice c : context.getDevices()) {
             System.out.println("\t" + c.getName());
         }
+
         CLQueue queue = context.createDefaultQueue();
         ByteOrder byteOrder = context.getByteOrder();
-        int localsize = 512;
-        int blockscount = n/200000;
-        int globalsize = ((blockscount)/localsize + 1) *localsize;
-        Pointer<Float>
-                aPtr = allocateFloats(n).order(byteOrder),
-                bPtr = allocateFloats(n).order(byteOrder),
-                oPtr = allocateFloats(n).order(byteOrder);
+        int localsize_x = 32;
+        int localsize_y = 16;
+        int blockscount_x = (C_ROWS + localsize_x -1)/localsize_x;
+        int blockscount_y = (C_COLS + localsize_y -1)/localsize_y;
+        int globalsize_x = blockscount_x*localsize_x;
+        int globalsize_y = blockscount_y*localsize_y;
+        Pointer<Pointer<Float>>
+                aPtr = allocateFloats(A_ROWS,A_COLS).order(byteOrder),
+                bPtr = allocateFloats(B_ROWS,B_COLS).order(byteOrder),
+                cPtr = allocateFloats(C_ROWS,C_COLS).order(byteOrder);
 
-        for (int i = 0; i < n; i++) {
-            aPtr.set(i, (float)i);
-            bPtr.set(i, (float)i);
+        //Move A
+        for (int row = 0; row < A_ROWS; row++) {
+            aPtr.get(row).setArray(ma[row]);
+        }
+        //Move B
+        for (int row = 0; row < B_ROWS; row++) {
+            bPtr.get(row).setArray(mb[row]);
         }
 
         // Create OpenCL input buffers (using the native memory pointers aPtr and bPtr) :
-        CLBuffer<Float>
-                a = context.createBuffer(CLMem.Usage.InputOutput, aPtr),
-                b = context.createBuffer(CLMem.Usage.Input, bPtr);
-
-        // Create an OpenCL output buffer :
+        CLBuffer<Pointer<Float>>
+                a = context.createBuffer(CLMem.Usage.Input, aPtr),
+                b = context.createBuffer(CLMem.Usage.Input, bPtr),
+                c = context.createBuffer(CLMem.Usage.InputOutput, cPtr);
 
 
         // Read the program sources and compile them :
@@ -72,15 +125,15 @@ public class OpenCLTest  {
         CLProgram program = context.createProgram(src);
 
         // Get and call the kernel :
-        CLKernel addFloatsKernel = program.createKernel("add_floats");
-        addFloatsKernel.setArgs(a, b,n);
+        CLKernel addFloatsKernel = program.createKernel("mMultiplication");
+        addFloatsKernel.setArgs(a, b,c, C_ROWS,C_COLS,B_ROWS);
 
 
-        long start = System.currentTimeMillis();
+
         CLEvent addEvt = null;
 
         try {
-            addEvt = addFloatsKernel.enqueueNDRange(queue, new int[]{globalsize},new int[]{localsize});
+            addEvt = addFloatsKernel.enqueueNDRange(queue, new int[]{globalsize_x,globalsize_y},new int[]{localsize_x,localsize_y});
             start = System.currentTimeMillis();
             addEvt.waitFor();
         } catch (Exception ex) {
@@ -88,50 +141,42 @@ public class OpenCLTest  {
             System.out.println(System.getenv("CL_LOG_ERRORS"));
         }
 
+        ende = System.currentTimeMillis();
+        System.out.println("GPU Time: " + (ende-start) + "ms");
 
+        c.read(queue,cPtr,true,addEvt);
+        //Pointer<Pointer<Float>> outPtr = c.read(queue, addEvt); // blocks until add_floats finished
 
-        long end = System.currentTimeMillis();
-        Pointer<Float> outPtr = a.read(queue, addEvt); // blocks until add_floats finished
-
-        // Print the first 10 output values :
-        for (int i = 0; i < 10 && i < n; i++)
-            System.out.println("out[" + i + "] = " + outPtr.get(i));
-
-        System.out.println("GPU Time: " + (end-start) + "ms");
-
-        boolean iswrong = false;
-        for(int i = 0; i < n; i++){
-            float res = outPtr.get(i);
-            float temp = res-i*2;
-            if(temp <-0.1 || temp >0.1){
-                System.out.println("Error: " + res + ", " + i);
-                iswrong= true;
-                break;
-            }
-
+        //Move C
+        for (int row = 0; row < C_ROWS; row++) {
+           float[] f = cPtr.get(row).getFloats(C_COLS);
+           for(int col = 0; col < f.length; col++){
+               mc[row][col] = f[col];
+           }
         }
+
+        start = System.currentTimeMillis();
+        Float[][] shouldC = getC(true);
+        ende = System.currentTimeMillis();
+        System.out.println("CPU Time: " + (ende - start) + "ms");
+
+
+        boolean isWrong = false;
+        for(int row = 0; row < C_ROWS; row++) {
+            for(int col = 0; col < C_COLS; col++) {
+                float diff = shouldC[row][col] -mc[row][col];
+                if(diff < 0) diff = diff * -1;
+
+                if(diff > 0.1) isWrong = true;
+            }
+        }
+        if(isWrong) System.out.println("Test wrong");
+        else System.out.println("Successfull");
+
         aPtr.release();
         bPtr.release();
-        oPtr.release();
-        if(iswrong) System.out.println("Test wrong");
-        else System.out.println("Successfull");
-    }
-    @Test
-    public void CPuTest() {
-        float[] a = new float[n];
-        float[] b = new float[n];
-        float[] c = new float[n];
-        for(int i = 0; i < n; i++){
-            a[i] = i;
-            b[i] = i;
-        }
-        long start = System.currentTimeMillis();
-        for(int i = 0; i < n; i++){
-            c[i] = a[i] + b[i];
-        }
+        cPtr.release();
 
-        long end = System.currentTimeMillis();
-        System.out.println("Time: " + (end-start) + "ms");
     }
 
 }
