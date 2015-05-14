@@ -19,10 +19,9 @@ public class Layer {
     private Layer next;
     private Layer before;
     private FieldMatrix<Complex> weightMatrix;
-    public Layer(int neuronCount, boolean hasBias) throws SeviException{
+    public Layer(int neuronCount) throws SeviException{
         if(neuronCount < 1) throw new SeviException("neuronCount has to be at least 1");
         generateNeurons(neuronCount);
-        this.setBias(hasBias);
     }
     public Layer getNext() {
         return next;
@@ -53,7 +52,6 @@ public class Layer {
         }
     }
     public void connectTo(Layer nextLayer){
-        Synapse synapse;
         for(Neuron myNeuron:neurons){
             for(Neuron nextNeuron:nextLayer.getNeurons()){
                 myNeuron.connectTo(nextNeuron);
@@ -77,10 +75,8 @@ public class Layer {
     }
     public FieldMatrix<Complex> getMatrixtoNextLayer() {
         if(this.weightMatrix != null) return this.weightMatrix;
-        int nextLength = this.next.getNeurons().size();
-        if(this.next.hasBias()) nextLength++;
-        Complex[][] matrix = new Complex[nextLength][this.getNeurons().size()];
-        for(int next = 0; next < nextLength; next++){
+        Complex[][] matrix = new Complex[this.next.getNeurons().size()][this.getNeurons().size()];
+        for(int next = 0; next < this.next.getNeurons().size(); next++){
             for(int me = 0; me < this.getNeurons().size(); me++){
                 matrix[next][me] = this.getNeurons().get(me).getOutputs().get(next).getWeight();
             }

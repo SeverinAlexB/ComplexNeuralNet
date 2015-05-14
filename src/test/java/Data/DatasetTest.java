@@ -1,3 +1,5 @@
+package Data;
+
 import Data.Pairs.RealPair;
 import Data.RealDataset;
 import Network.SeviException;

@@ -29,7 +29,6 @@ public class LayerPropagationTest extends LayerPropagation {
 
         LayerResult layerResult = new LayerResult();
         layerResult.setNetin(neti);
-        layerResult.setActivationFunction(ActivationFunction.Sigmoid);
         FieldVector<Complex> result = this.calcDelta(error, layerResult);
 
 

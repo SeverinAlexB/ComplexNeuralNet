@@ -102,7 +102,7 @@ public class LayerPropagation {
     }
     protected FieldVector<Complex> calcDelta(FieldVector<Complex> error, LayerResult result){
         FieldVector<Complex> netint = conjugate(result.getNetin());
-        netint = result.getActivationFunction().calc(netint);
+       // netint = result.getActivationFunction().calc(netint);
         FieldVector<Complex> delta = OneMinus(netint);
         delta = netint.ebeMultiply(delta);
         delta = error.ebeMultiply(delta);

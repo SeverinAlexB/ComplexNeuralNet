@@ -11,19 +11,11 @@ public class LayerResult {
     public LayerResult(){}
 
 
-
-    private ActivationFunction activationFunction;
     private FieldVector<Complex> input;
     private FieldVector<Complex> netin;
-    private FieldVector<Complex> output;
 
 
-    public ActivationFunction getActivationFunction() {
-        return activationFunction;
-    }
-    public void setActivationFunction(ActivationFunction activationFunction) {
-        this.activationFunction = activationFunction;
-    }
+
 
     public FieldVector<Complex> getNetin() {
         return netin;
@@ -37,12 +29,5 @@ public class LayerResult {
     }
     public void setInput(FieldVector<Complex> input) {
         this.input = input;
-    }
-
-    public FieldVector<Complex> getOutput() {
-        return output;
-    }
-    public void setOutput(FieldVector<Complex> output) {
-        this.output = output;
     }
 }

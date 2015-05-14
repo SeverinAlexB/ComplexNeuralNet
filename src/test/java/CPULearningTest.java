@@ -58,9 +58,9 @@ public class CPULearningTest {
     public void iterationTest() throws Exception {
         ComplexDataset andSet = getAndDataset();
         FeedForwardNet net = new FeedForwardNet();
-        net.addLayer(3, ActivationFunction.Sigmoid);
+        net.addLayer(3);
         //net.addLayer(2, ActivationFunction.Sigmoid);
-        net.addLayer(1, ActivationFunction.Sigmoid);
+        net.addLayer(1);
 
         SingleThreadCalculation calculation = new SingleThreadCalculation(net);
         SingleThreadPropagation propagation = new SingleThreadPropagation(net);
@@ -73,7 +73,7 @@ public class CPULearningTest {
         for(int i = 0; i < 100; i++) {
             learning.iteration(1000);
             weight.add(net.getLayers().get(0).getNeurons().get(0).getOutputs().get(0).getWeight().toString());
-            //LayerTest.out(net.getLayers().get(0).getMatrixtoNextLayer());
+            //Network.Layer.LayerTest.out(net.getLayers().get(0).getMatrixtoNextLayer());
              System.out.println("Error: " + learning.getError());
         }
         this.wirte(weight);

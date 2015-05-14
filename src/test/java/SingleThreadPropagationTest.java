@@ -25,9 +25,9 @@ public class SingleThreadPropagationTest extends SingleThreadPropagation {
 
     public FeedForwardNet getNetWith1Weights() throws SeviException{
         FeedForwardNet net = new FeedForwardNet();
-        Layer l1 = net.addLayer(2, ActivationFunction.Sigmoid);
-        Layer l2 = net.addLayer(2, ActivationFunction.Sigmoid);
-        Layer l3 = net.addLayer(1, ActivationFunction.Sigmoid);
+        Layer l1 = net.addLayer(2);
+        Layer l2 = net.addLayer(2);
+        Layer l3 = net.addLayer(1);
 
         l1.getNeurons().get(0).getOutputs().get(0).setWeight(new Complex(1));
         l1.getNeurons().get(0).getOutputs().get(1).setWeight(new Complex(0.9));

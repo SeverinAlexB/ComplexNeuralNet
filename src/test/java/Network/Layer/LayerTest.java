@@ -1,3 +1,5 @@
+package Network.Layer;
+
 import Network.Layer.Layer;
 import Network.Layer.Neuron.ActivationFunction;
 import Network.Layer.Neuron.Neuron;
@@ -18,17 +20,19 @@ import static junit.framework.Assert.assertTrue;
 public class LayerTest {
     @Test
     public void connectToTest() throws SeviException {
-        Layer l1 = new Layer(2,  true);
-        Layer l2 = new Layer(2,  true);
+        Layer l1 = new Layer(2);
+        Layer l2 = new Layer(2);
 
         assertEquals(2, l1.getNeurons().size());
         assertEquals(2, l2.getNeurons().size());
 
         l1.connectTo(l2);
+        l2.setBias(true);
 
 
         Neuron n0 = l1.getNeurons().get(0);
         Neuron n1 = l1.getNeurons().get(1);
+        Neuron bias = l1.getNeurons().get(2);
 
         Neuron n2 = l2.getNeurons().get(0);
         Neuron n3 = l2.getNeurons().get(1);
@@ -36,21 +40,26 @@ public class LayerTest {
         //Hat 2*2 Synapse gehen aus Neuronen raus
         assertEquals(n0.getOutputs().size(),2);
         assertEquals(n1.getOutputs().size(),2);
+        assertEquals(bias.getOutputs().size(),2);
         //Hat 2*2 Synapse gehen in die Neuronen rein
-        assertEquals(n2.getInputs().size(),2);
-        assertEquals(n3.getInputs().size(),2);
+        assertEquals(3,n2.getInputs().size());
+        assertEquals(3,n3.getInputs().size());
 
         //Synapse zeigen an den richtigen Ort
         assertEquals(n0.getOutputs().get(0).getOutput(),n2);
         assertEquals(n0.getOutputs().get(1).getOutput(),n3);
         assertEquals(n1.getOutputs().get(0).getOutput(),n2);
         assertEquals(n1.getOutputs().get(1).getOutput(),n3);
+        assertEquals(bias.getOutputs().get(0).getOutput(),n2);
+        assertEquals(bias.getOutputs().get(1).getOutput(),n3);
+
     }
     @Test
     public void getMatrixToNextLayerTest() throws  Exception{
-        Layer l1 = new Layer(2,  true);
-        Layer l2 = new Layer(3,  true);
+        Layer l1 = new Layer(2);
+        Layer l2 = new Layer(3);
         l1.connectTo(l2);
+        l2.setBias(true);
 
         //Set weights manually
         l1.getNeurons().get(0).getOutputs().get(0).setWeight(new Complex(1));
@@ -63,7 +72,7 @@ public class LayerTest {
 
 
         FieldMatrix<Complex> matrix = l1.getMatrixtoNextLayer();
-        //out(matrix);
+        out(matrix);
 
         assertEquals(1, matrix.getEntry(0, 0).getReal(), 0.0001);
         assertEquals(4, matrix.getEntry(0, 1).getReal(), 0.0001);
@@ -74,8 +83,8 @@ public class LayerTest {
     }
     @Test
     public void setMatrixToNextLayerTest() throws SeviException{
-        Layer l1 = new Layer(2,true);
-        Layer l2 = new Layer(3, true);
+        Layer l1 = new Layer(2);
+        Layer l2 = new Layer(3);
         l1.connectTo(l2);
 
         FieldMatrix<Complex> matrix1 = l1.getMatrixtoNextLayer();
