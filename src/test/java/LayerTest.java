@@ -18,8 +18,8 @@ import static junit.framework.Assert.assertTrue;
 public class LayerTest {
     @Test
     public void connectToTest() throws SeviException {
-        Layer l1 = new Layer(2, ActivationFunction.Sigmoid, true);
-        Layer l2 = new Layer(2, ActivationFunction.Sigmoid, true);
+        Layer l1 = new Layer(2,  true);
+        Layer l2 = new Layer(2,  true);
 
         assertEquals(2, l1.getNeurons().size());
         assertEquals(2, l2.getNeurons().size());
@@ -48,8 +48,8 @@ public class LayerTest {
     }
     @Test
     public void getMatrixToNextLayerTest() throws  Exception{
-        Layer l1 = new Layer(2, ActivationFunction.Sigmoid, true);
-        Layer l2 = new Layer(3, ActivationFunction.Sigmoid, true);
+        Layer l1 = new Layer(2,  true);
+        Layer l2 = new Layer(3,  true);
         l1.connectTo(l2);
 
         //Set weights manually
@@ -74,8 +74,8 @@ public class LayerTest {
     }
     @Test
     public void setMatrixToNextLayerTest() throws SeviException{
-        Layer l1 = new Layer(2, ActivationFunction.Sigmoid,true);
-        Layer l2 = new Layer(3, ActivationFunction.Sigmoid, true);
+        Layer l1 = new Layer(2,true);
+        Layer l2 = new Layer(3, true);
         l1.connectTo(l2);
 
         FieldMatrix<Complex> matrix1 = l1.getMatrixtoNextLayer();

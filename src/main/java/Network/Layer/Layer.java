@@ -15,14 +15,14 @@ import java.util.ArrayList;
  */
 public class Layer {
     private ArrayList<Neuron> neurons = new ArrayList<Neuron>();
-    private boolean hasBias = true;
+    private boolean hasBias = false;
     private Layer next;
     private Layer before;
     private FieldMatrix<Complex> weightMatrix;
-    public Layer(int neuronCount, ActivationFunction activationFunction, boolean hasBias) throws SeviException{
+    public Layer(int neuronCount, boolean hasBias) throws SeviException{
         if(neuronCount < 1) throw new SeviException("neuronCount has to be at least 1");
         generateNeurons(neuronCount);
-        this.hasBias = hasBias;
+        this.setBias(hasBias);
     }
     public Layer getNext() {
         return next;
@@ -36,6 +36,17 @@ public class Layer {
     public boolean hasBias() {
         return hasBias;
     }
+    public void setBias(boolean hasBias){
+        boolean hasToAdd = this.hasBias==false && hasBias==true;
+        boolean hasToDelete = this.hasBias==true && hasBias==false;
+        this.hasBias = hasBias;
+        if(hasToAdd){
+            addBias();
+        }
+        if(hasToDelete){
+            removeBias();
+        }
+    }
     private void generateNeurons(int neuronCount){
         for(int i=0; i < neuronCount; i++) {
             neurons.add(new Neuron());
@@ -45,19 +56,31 @@ public class Layer {
         Synapse synapse;
         for(Neuron myNeuron:neurons){
             for(Neuron nextNeuron:nextLayer.getNeurons()){
-                synapse = new Synapse(myNeuron,nextNeuron);
-                myNeuron.getOutputs().add(synapse);
-                nextNeuron.getInputs().add(synapse);
+                myNeuron.connectTo(nextNeuron);
             }
         }
         this.next = nextLayer;
         nextLayer.before = this;
     }
-    public FieldMatrix<Complex> getMatrixtoNextLayer() throws SeviException {
-        if(this.next == null) throw new SeviException("Connect to a layer first");
+    private void addBias() {
+        Neuron bias = new Neuron();
+        this.before.getNeurons().add(bias);
+        for(Neuron neuron: this.getNeurons()){
+            bias.connectTo(neuron);
+        }
+    }
+    private void removeBias() {
+        Neuron bias = this.before.getNeurons().get(this.before.getNeurons().size()-1);
+        for(Neuron neuron: this.getNeurons()){
+            bias.unconnectTo(neuron);
+        }
+    }
+    public FieldMatrix<Complex> getMatrixtoNextLayer() {
         if(this.weightMatrix != null) return this.weightMatrix;
-        Complex[][] matrix = new Complex[this.next.getNeurons().size()][this.getNeurons().size()];
-        for(int next = 0; next < this.next.getNeurons().size(); next++){
+        int nextLength = this.next.getNeurons().size();
+        if(this.next.hasBias()) nextLength++;
+        Complex[][] matrix = new Complex[nextLength][this.getNeurons().size()];
+        for(int next = 0; next < nextLength; next++){
             for(int me = 0; me < this.getNeurons().size(); me++){
                 matrix[next][me] = this.getNeurons().get(me).getOutputs().get(next).getWeight();
             }
@@ -76,6 +99,5 @@ public class Layer {
                 this.getNeurons().get(me).getOutputs().get(next).setWeight(matrix[next][me]);
             }
         }
-
     }
 }

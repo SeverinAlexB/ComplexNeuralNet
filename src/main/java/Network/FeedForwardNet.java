@@ -17,7 +17,7 @@ public class FeedForwardNet {
         return Collections.unmodifiableList(layers);
     }
     public Layer addLayer(int neuronCount, ActivationFunction activationFunction) throws SeviException{
-        Layer layer = new Layer(neuronCount,activationFunction, true);
+        Layer layer = new Layer(neuronCount, true);
         layers.add(layer);
         if(layers.size() > 1) {
             layers.get(layers.size() -2).connectTo(layer);

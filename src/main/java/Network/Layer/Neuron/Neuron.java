@@ -16,4 +16,19 @@ public class Neuron {
         return inputs;
     }
 
+    public void connectTo(Neuron n){
+        Synapse synapse = new Synapse(this,n);
+        this.outputs.add(synapse);
+        n.getInputs().add(synapse);
+    }
+    public void unconnectTo(Neuron n){
+        for(Synapse s: outputs){
+            if(s.getOutput() == n){
+                outputs.remove(s);
+                n.getInputs().remove(s);
+                break;
+            }
+        }
+    }
+
 }
