@@ -15,14 +15,14 @@ import java.util.ArrayList;
  */
 public class Layer {
     private ArrayList<Neuron> neurons = new ArrayList<Neuron>();
+    private boolean hasBias = true;
     private Layer next;
     private Layer before;
     private FieldMatrix<Complex> weightMatrix;
-    private ActivationFunction activationFunction;
-    public Layer(int neuronCount, ActivationFunction activationFunction) throws SeviException{
+    public Layer(int neuronCount, ActivationFunction activationFunction, boolean hasBias) throws SeviException{
         if(neuronCount < 1) throw new SeviException("neuronCount has to be at least 1");
-        this.setActivationFunction(activationFunction);
         generateNeurons(neuronCount);
+        this.hasBias = hasBias;
     }
     public Layer getNext() {
         return next;
@@ -33,20 +33,15 @@ public class Layer {
     public ArrayList<Neuron> getNeurons(){
         return neurons;
     }
-    public ActivationFunction getActivationFunction() {
-        return activationFunction;
-    }
-
-    public void setActivationFunction(ActivationFunction activationFunction) {
-        this.activationFunction = activationFunction;
+    public boolean hasBias() {
+        return hasBias;
     }
     private void generateNeurons(int neuronCount){
         for(int i=0; i < neuronCount; i++) {
             neurons.add(new Neuron());
         }
     }
-    public void connectTo(Layer nextLayer) throws  SeviException{
-        if(this.next != null) throw new SeviException("Layer is already connected!");
+    public void connectTo(Layer nextLayer){
         Synapse synapse;
         for(Neuron myNeuron:neurons){
             for(Neuron nextNeuron:nextLayer.getNeurons()){

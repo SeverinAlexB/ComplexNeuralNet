@@ -35,16 +35,16 @@ public class SingleThreadCalculation implements ICalculationStrategy {
         LayerResult result = new LayerResult();
         result.setInput(input);
         for(int i = 0; i < net.getLayers().size() -1; i++) {
-            Layer l = net.getLayers().get(i);
+            /*Layer l = net.getLayers().get(i);
             FieldMatrix<Complex> matrix = l.getMatrixtoNextLayer();
             FieldVector<Complex> netin = matrix.operate(result.getInput());
             result.setNetin(netin);
-            FieldVector<Complex> output = l.getActivationFunction().calc(netin);
+            //FieldVector<Complex> output = l.getActivationFunction().calc(netin);
             result.setOutput(output);
             result.setActivationFunction(l.getActivationFunction());
             this.layerResults.add(result);
             result = new LayerResult();
-            result.setInput(output);
+            result.setInput(output);*/
         }
         return result.getInput();
     }
