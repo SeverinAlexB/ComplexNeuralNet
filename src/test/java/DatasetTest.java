@@ -11,12 +11,12 @@ import static junit.framework.Assert.assertEquals;
 public class DatasetTest {
     @Test
     public void transformPairTest() throws SeviException{
-        double[] in = {0.1}, out = {0.5};
+        Double[] in = {0.1}, out = {0.5};
 
         RealPair r = new RealPair(in,out);
         RealDataset rd = new RealDataset();
         rd.add(r);
-        RealDataset rd2 = rd.transform().transform();
+        RealDataset rd2 = rd.toComplex().toReal();
 
         assertEquals(rd.getPairs().get(0).getInput()[0],rd2.getPairs().get(0).getInput()[0], 0.0001);
         assertEquals(rd.getPairs().get(0).getTarget()[0],rd.getPairs().get(0).getTarget()[0],0.0001);

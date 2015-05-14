@@ -1,5 +1,6 @@
 import Data.ComplexDataset;
-import Data.Helper;
+import Data.Pairs.Helper.ComplexValue;
+import Data.Pairs.Helper.RealValue;
 import Data.Pairs.RealPair;
 import Data.RealDataset;
 import Network.Calculation.ICalculationStrategy;
@@ -23,35 +24,35 @@ public class CPULearningTest {
 
     private ComplexDataset getAndDataset() throws SeviException{
         RealDataset set = new RealDataset();
-        double[] in1 = {0.1,0.1,0.9};
-        double[] out1 = {0.1};
-        double[] in2 = {0.9,0.1,0.9};
-        double[] out2 = {0.1};
-        double[] in3 = {0.1, 0.9,0.9};
-        double[] out3 = {0.1};
-        double[] in4 = {0.9,0.9,0.9};
-        double[] out4 = {0.9};
+        Double[] in1 = {0.1,0.1,0.9};
+        Double[] out1 = {0.1};
+        Double[] in2 = {0.9,0.1,0.9};
+        Double[] out2 = {0.1};
+        Double[] in3 = {0.1, 0.9,0.9};
+        Double[] out3 = {0.1};
+        Double[] in4 = {0.9,0.9,0.9};
+        Double[] out4 = {0.9};
         set.add(new RealPair(in1,out1));
         set.add(new RealPair(in2,out2));
         set.add(new RealPair(in3,out3));
         set.add(new RealPair(in4,out4));
-        return set.transform();
+        return set.toComplex();
     }
     private ComplexDataset getXorDataset() throws SeviException{
         RealDataset set = new RealDataset();
-        double[] in1 = {0.1,0.1,0.9};
-        double[] out1 = {0.1};
-        double[] in2 = {0.9,0.1,0.9};
-        double[] out2 = {0.9};
-        double[] in3 = {0.1, 0.9,0.9};
-        double[] out3 = {0.9};
-        double[] in4 = {0.9,0.9,0.9};
-        double[] out4 = {0.1};
+        Double[] in1 = {0.1,0.1,0.9};
+        Double[] out1 = {0.1};
+        Double[] in2 = {0.9,0.1,0.9};
+        Double[] out2 = {0.9};
+        Double[] in3 = {0.1, 0.9,0.9};
+        Double[] out3 = {0.9};
+        Double[] in4 = {0.9,0.9,0.9};
+        Double[] out4 = {0.1};
         set.add(new RealPair(in1,out1));
         set.add(new RealPair(in2,out2));
         set.add(new RealPair(in3,out3));
         set.add(new RealPair(in4,out4));
-        return set.transform();
+        return set.toComplex();
     }
     @Test
     public void iterationTest() throws Exception {
@@ -76,26 +77,26 @@ public class CPULearningTest {
              System.out.println("Error: " + learning.getError());
         }
         this.wirte(weight);
-        double[] testinput = {0,0,1};
+        Double[] testinput = {0d,0d,1d};
         System.out.println("0,0:");
         testen(testinput, calculation);
 
-        double[] testinput1 = {0,1,1};
+        Double[] testinput1 = {0d,1d,1d};
         System.out.println("0,1:");
         testen(testinput1, calculation);
 
-        double[] testinput2 = {1,0,1};
+        Double[] testinput2 = {1d,0d,1d};
         System.out.println("1,0:");
         testen(testinput2,calculation);
 
-        double[] testinput3= {1,1,1};
+        Double[] testinput3= {1d,1d,1d};
         System.out.println("1,1:");
         testen(testinput3,calculation);
     }
-    private void testen(double[] testinput, ICalculationStrategy calculation) throws SeviException{
+    private void testen(Double[] testinput, ICalculationStrategy calculation) throws SeviException{
 
-        FieldVector<Complex> output = calculation.calculate(Helper.transform(testinput));
-        double[] out = Helper.transformE(output);
+        FieldVector<Complex> output = calculation.calculate(RealValue.toComplex(testinput));
+        Double[] out = ComplexValue.toReal(output);
 
         for(int i = 0; i < out.length; i++) {
             System.out.print(out[i]);

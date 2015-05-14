@@ -1,7 +1,7 @@
 package Network.Learning;
 
 import Data.ComplexDataset;
-import Data.Helper;
+import Data.Pairs.Helper.ComplexValue;
 import Data.Pairs.ComplexPair;
 import Network.Calculation.ICalculationStrategy;
 import Network.FeedForwardNet;
@@ -77,7 +77,7 @@ public class CPULearning {
     private void setError(FieldVector<Complex> error){
         double sum = 0.0;
         for(int i = 0; i < error.getDimension(); i++) {
-            double temp = Helper.transformE(error.getEntry(i));
+            double temp = new ComplexValue(error.getEntry(i)).getReal();
             sum += temp*temp;
         }
         this.sqrerror = sum;

@@ -1,6 +1,6 @@
 package Network.Layer.Neuron;
 
-import Data.Helper;
+import Data.Pairs.Helper.RealValue;
 import org.apache.commons.math3.complex.Complex;
 
 import java.util.Random;
@@ -40,11 +40,9 @@ public class Synapse {
     }
 
     private Complex getRandomWeight() {
-        double min = 0; double max = 0.9;
+        double min = 0; double max = 0.9999;
         double real = getRandom(min,max);
-        double img = getRandom(min,max);
-        //return new Complex(real,img);
-        return Helper.transform(real);
+        return new RealValue(real).toComplex();
     }
 
     private Random random = new Random();
