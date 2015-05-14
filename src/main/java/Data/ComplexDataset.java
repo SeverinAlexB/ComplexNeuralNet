@@ -8,6 +8,7 @@ import Network.SeviException;
  */
 public class ComplexDataset extends AbstractDataset<ComplexPair> {
 
+
     public RealDataset toReal() {
         RealDataset rd = new  RealDataset();
         for( ComplexPair cp: pairs){
@@ -18,6 +19,17 @@ public class ComplexDataset extends AbstractDataset<ComplexPair> {
             }
         }
         return rd;
+    }
+    public SectorDataset toSector(int sectorsCount) {
+        SectorDataset sd = new  SectorDataset(sectorsCount);
+        for( ComplexPair cp: pairs){
+            try {
+                sd.add(cp.toSector(sectorsCount));
+            } catch(SeviException ex){
+                assert false;
+            }
+        }
+        return sd;
     }
     protected boolean checkArrayBounds(ComplexPair pair){
         int inputlength = this.getPairs().get(0).getInput().getDimension();

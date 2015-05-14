@@ -1,5 +1,6 @@
 package Data;
 
+import Data.Pairs.ComplexPair;
 import Data.Pairs.RealPair;
 import Network.SeviException;
 
@@ -14,10 +15,22 @@ public class RealDataset extends  AbstractDataset<RealPair> {
         }
         return cd;
     }
+    public SectorDataset toSector(int sectorsCount) {
+        SectorDataset sd = new  SectorDataset(sectorsCount);
+        for( RealPair cp: pairs){
+            try {
+                sd.add(cp.toSector(sectorsCount));
+            } catch(SeviException ex){
+                assert false;
+            }
+        }
+        return sd;
+    }
     protected boolean checkArrayBounds(RealPair pair){
        int inputlength = this.getPairs().get(0).getInput().length;
         int outputlength = this.getPairs().get(0).getInput().length;
         boolean boundOk = pair.getInput().length == inputlength && pair.getTarget().length == outputlength;
         return boundOk;
     }
+
 }
