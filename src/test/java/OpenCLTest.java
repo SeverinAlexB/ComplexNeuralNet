@@ -61,7 +61,7 @@ public class OpenCLTest  {
         }
         return c;
     }
-    @Test
+
     public void Test()throws Exception {
         long start = 0,ende = 0;
         Float[][] ma = getA();

@@ -3,9 +3,14 @@ package Network.Learning;
 import Data.ComplexDataset;
 import Data.Pairs.Helper.ComplexValue;
 import Data.Pairs.ComplexPair;
+import Data.Pairs.SectorPair;
+import Data.SectorDataset;
 import Network.Learning.Calculation.ICalculationStrategy;
 import Network.FeedForwardNet;
+import Network.Learning.Calculation.SingleThreadCalculation;
 import Network.Learning.Propagation.IPropagationStrategy;
+import Network.Learning.Propagation.SingleThreadPropagation;
+import Network.SectorHelper;
 import Network.SeviException;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldVector;
@@ -19,60 +24,37 @@ public class CPULearning {
     private FeedForwardNet net;
     private ICalculationStrategy calculation;
     private IPropagationStrategy propagation;
-    private ComplexDataset dataset;
+    private SectorDataset dataset;
     private double sqrerror = 1;
 
     public CPULearning(FeedForwardNet net, ICalculationStrategy calculation, IPropagationStrategy propagation) {
         this.net = net;
-        this.setCalculation(calculation);
-        this.setPropagation(propagation);
+        this.calculation = calculation;
+        this.propagation = propagation;
     }
-
-
+    public CPULearning(FeedForwardNet net) {
+        this.net = net;
+        this.calculation = new SingleThreadCalculation(net);
+        this.propagation = new SingleThreadPropagation(net);
+    }
 
     public FeedForwardNet getNet() {
         return net;
     }
-    public void setNet(FeedForwardNet net) {
-        this.net = net;
-    }
     public ICalculationStrategy getCalculation() {
         return calculation;
-    }
-    public void setCalculation(ICalculationStrategy calculation) {
-        this.calculation = calculation;
-        this.calculation.setNetWork(net);
     }
     public IPropagationStrategy getPropagation() {
         return propagation;
     }
-    public void setPropagation(IPropagationStrategy propagation) {
-        this.propagation = propagation;
-        this.propagation.setNetWork(net);
-    }
-    public ComplexDataset getDataset() {
+    public SectorDataset getDataset() {
         return dataset;
     }
-    public void setDataset(ComplexDataset dataset) {
+    public void setDataset(SectorDataset dataset) {
         this.dataset = dataset;
     }
     public double getError(){
         return this.sqrerror;
-    }
-    private Random random = new Random();
-    public void iteration(int count) throws SeviException{
-        int id;
-        FieldVector<Complex> out, error;
-        for(int i = 0; i < count; i++) {
-            id = random.nextInt(dataset.getPairs().size());
-            ComplexPair pair = dataset.getPairs().get(id);
-            //FieldVector<Complex> verrauscht = addRauschen(pair.getInput());
-            out = calculation.calculate(pair.getInput());
-            //error = out.subtract(pair.getTarget());
-            error = pair.getTarget().subtract(out);
-            this.setError(error);
-            //propagation.propagate(error, calculation.getLayerResults());
-        }
     }
     private void setError(FieldVector<Complex> error){
         double sum = 0.0;
@@ -82,18 +64,26 @@ public class CPULearning {
         }
         this.sqrerror = sum;
     }
-    private FieldVector<Complex> addRauschen(FieldVector<Complex> vector){
-        FieldVector<Complex> ret = vector.copy();
-        for(int i = 0; i < vector.getDimension(); i++){
-            Complex temp = ret.getEntry(i).multiply(getRandom());
-            ret.setEntry(i,ret.getEntry(i).add(temp));
+
+
+    private Random random = new Random();
+    public void iteration(int count) throws SeviException{
+        int id;
+        FieldVector<Complex> out, error, round, should;
+        for(int i = 0; i < count; i++) {
+            id = random.nextInt(dataset.getPairs().size());
+            SectorPair pair = dataset.getPairs().get(id);
+
+            calculation.calculate(pair.getInput());
+            out = calculation.getLast().getNetin();
+            round = SectorHelper.roundDownToSector(out, net.getSectorsCount());
+            should = pair.getTarget().ebeMultiply(round);
+            error = should.subtract(out);
+
+            this.setError(error);
+            propagation.propagate(error, calculation.getLast());
         }
-        return ret;
     }
-    private Complex getRandom(){
-        double sigma = 0.125;
-        double real = 2*sigma* random.nextDouble() - sigma;
-        double img = 2*sigma* random.nextDouble() - sigma;
-        return new Complex(real,img);
-    }
+
+
 }

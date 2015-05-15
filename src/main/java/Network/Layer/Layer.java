@@ -66,6 +66,11 @@ public class Layer {
         for(Neuron neuron: this.getNeurons()){
             bias.connectTo(neuron);
         }
+        if(this.before.before != null){
+            for (Neuron neuron: this.before.before.getNeurons()){
+                neuron.connectTo(bias);
+            }
+        }
     }
     private void removeBias() {
         Neuron bias = this.before.getNeurons().get(this.before.getNeurons().size()-1);

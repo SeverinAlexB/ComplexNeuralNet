@@ -72,7 +72,7 @@ public class LayerTest {
 
 
         FieldMatrix<Complex> matrix = l1.getMatrixtoNextLayer();
-        out(matrix);
+        //out(matrix);
 
         assertEquals(1, matrix.getEntry(0, 0).getReal(), 0.0001);
         assertEquals(4, matrix.getEntry(0, 1).getReal(), 0.0001);
@@ -96,27 +96,6 @@ public class LayerTest {
                 assertTrue(matrix1.getEntry(x, y).equals(matrix2.getEntry(x, y)));
             }
         }
-
-    }
-
-
-    public void getOutTest(){
-        Complex[][] m = {{new Complex(1),new Complex(2)},{new Complex(3),new Complex(4)}};
-        FieldMatrix<Complex> matrix = MatrixUtils.createFieldMatrix(m);
-
-        Complex[] v = {new Complex(1),new Complex(2)};
-        FieldVector<Complex> vector = MatrixUtils.createFieldVector(v);
-
-        FieldVector<Complex> multi = matrix.operate(vector);
-
-        System.out.println("Matrix:");
-        out(matrix);
-
-        System.out.println("Vector:");
-        out(vector);
-
-        System.out.println("Result:");
-        out(multi);
 
     }
 

@@ -21,6 +21,7 @@ public class RealDataset extends  AbstractDataset<RealPair> {
             try {
                 sd.add(cp.toSector(sectorsCount));
             } catch(SeviException ex){
+                System.out.println(ex);
                 assert false;
             }
         }
@@ -28,7 +29,7 @@ public class RealDataset extends  AbstractDataset<RealPair> {
     }
     protected boolean checkArrayBounds(RealPair pair){
        int inputlength = this.getPairs().get(0).getInput().length;
-        int outputlength = this.getPairs().get(0).getInput().length;
+        int outputlength = this.getPairs().get(0).getTarget().length;
         boolean boundOk = pair.getInput().length == inputlength && pair.getTarget().length == outputlength;
         return boundOk;
     }

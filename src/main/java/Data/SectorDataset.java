@@ -20,7 +20,7 @@ public class SectorDataset extends AbstractDataset<SectorPair> {
     }
     protected boolean checkArrayBounds(SectorPair pair){
         int inputlength = this.getPairs().get(0).getInput().getDimension();
-        int outputlength = this.getPairs().get(0).getInput().getDimension();
+        int outputlength = this.getPairs().get(0).getTarget().getDimension();
         boolean boundOk = pair.getInput().getDimension() == inputlength && pair.getTarget().getDimension() == outputlength;
         return boundOk;
     }
