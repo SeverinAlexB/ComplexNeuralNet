@@ -11,7 +11,7 @@ import static junit.framework.Assert.assertEquals;
 /**
  * Created by Severin on 14.05.2015.
  */
-public class SectorHelperTest {
+public class SectorHelperTest extends SectorHelper {
     double delta = 0.0000001;
     @Test
     public void moduloSectorTest() {

@@ -1,6 +1,6 @@
 package Network.Learning.Propagation;
 
-import Network.Calculation.LayerResult;
+import Network.Learning.Calculation.LayerResult;
 import Network.FeedForwardNet;
 import Network.SeviException;
 import org.apache.commons.math3.complex.Complex;
@@ -14,8 +14,5 @@ import java.util.ArrayList;
 public interface IPropagationStrategy {
     public void setNetWork(FeedForwardNet net);
     public FeedForwardNet getNetWork();
-    public double getEta();
-    public void setEta(double eta);
-    public void propagate(FieldVector<Complex> error, ArrayList<LayerResult> results) throws SeviException;
-  //  public void propagate(Complex[]  error);
+    public void propagate(FieldVector<Complex> error, LayerResult lastResult) throws SeviException;
 }

@@ -1,6 +1,7 @@
 package Network.Learning.Propagation;
 
-import Network.Calculation.LayerResult;
+import Network.Layer.Layer;
+import Network.Learning.Calculation.LayerResult;
 import Network.FeedForwardNet;
 import Network.SeviException;
 import org.apache.commons.math3.complex.Complex;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
  */
 public class SingleThreadPropagation implements IPropagationStrategy {
     private FeedForwardNet net;
-    private double eta = 0.6;
 
     public SingleThreadPropagation(FeedForwardNet net){
         setNetWork(net);
@@ -25,33 +25,35 @@ public class SingleThreadPropagation implements IPropagationStrategy {
         return this.net;
     }
 
-    public double getEta() {
-        return eta;
-    }
-    public void setEta(double eta) {
-        this.eta = eta;
-    }
 
 
-    public void propagate(FieldVector<Complex> error, ArrayList<LayerResult> results) throws SeviException{
-        ArrayList<LayerPropagation> layerPropagations = calcLayerPropagation(error,results);
+    public void propagate(FieldVector<Complex> error, LayerResult lastResult) throws SeviException{
+        ArrayList<WeightPropagation> weightPropagations = calcLayerPropagation(error,lastResult);
 
-        for(LayerPropagation lp:layerPropagations){
-            lp.ajustWeights(this.eta);
+        for(WeightPropagation lp: weightPropagations){
+            lp.ajustWeights();
         }
     }
-    protected ArrayList<LayerPropagation> calcLayerPropagation(FieldVector<Complex> error,
-                                                            ArrayList<LayerResult> results) throws SeviException {
-        ArrayList<LayerPropagation> layerPropagations = new ArrayList<LayerPropagation>();
-        LayerPropagation lp = new LayerPropagation(error,net.getLayers().get(net.getLayers().size()-1), results.get(results.size()-1));
-        layerPropagations.add(lp);
+    protected ArrayList<WeightPropagation> calcLayerPropagation(FieldVector<Complex> error, LayerResult lastResult) throws SeviException {
+        ArrayList<WeightPropagation> weightPropagations = new ArrayList<WeightPropagation>();
+        Layer lastLayer = net.getLayers().get(net.getLayers().size()-2);
+        LayerResult lastRes = lastResult;
 
-        for(int i = results.size() -2; i >= 0 ; i--) {
-            LayerResult result = results.get(i);
-            lp = lp.getNext(result);
-            layerPropagations.add(lp);
+        WeightPropagation lp = new WeightPropagation(lastLayer, lastResult,error);
+        weightPropagations.add(lp);
+
+        int layersCount = 1;
+        while(lastLayer.getBefore() != null){
+            lp = lp.getNext();
+            weightPropagations.add(lp);
+
+            layersCount++;
+            if(layersCount > 10000) {
+                throw new SeviException("More than 10000 layers counted. Software failure?");
+            }
         }
-        return layerPropagations;
+
+        return weightPropagations;
     }
 
 }

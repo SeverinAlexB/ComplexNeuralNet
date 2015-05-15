@@ -3,10 +3,9 @@ import Data.Pairs.Helper.ComplexValue;
 import Data.Pairs.Helper.RealValue;
 import Data.Pairs.RealPair;
 import Data.RealDataset;
-import Network.Calculation.ICalculationStrategy;
-import Network.Calculation.SingleThreadCalculation;
+import Network.Learning.Calculation.ICalculationStrategy;
+import Network.Learning.Calculation.SingleThreadCalculation;
 import Network.FeedForwardNet;
-import Network.Layer.Neuron.ActivationFunction;
 import Network.Learning.CPULearning;
 import Network.Learning.Propagation.SingleThreadPropagation;
 import Network.SeviException;
@@ -57,14 +56,14 @@ public class CPULearningTest {
     @Test
     public void iterationTest() throws Exception {
         ComplexDataset andSet = getAndDataset();
-        FeedForwardNet net = new FeedForwardNet();
-        net.addLayer(3);
+        FeedForwardNet net = new FeedForwardNet(1);
+        net.addLayer(3,false);
         //net.addLayer(2, ActivationFunction.Sigmoid);
-        net.addLayer(1);
+        net.addLayer(1,false);
 
         SingleThreadCalculation calculation = new SingleThreadCalculation(net);
         SingleThreadPropagation propagation = new SingleThreadPropagation(net);
-        propagation.setEta(0.6);
+
 
         CPULearning learning = new CPULearning(net,calculation,propagation);
         learning.setDataset(andSet);

@@ -1,4 +1,4 @@
-package Network.Calculation;
+package Network.Learning.Calculation;
 
 import Network.FeedForwardNet;
 import Network.Layer.Layer;
@@ -15,14 +15,14 @@ import java.util.ArrayList;
  */
 public class SingleThreadCalculation implements ICalculationStrategy {
     private FeedForwardNet net;
-    private ArrayList<LayerResult> layerResults = new ArrayList<LayerResult>();
+    private LayerResult first;
+    private LayerResult last;
+
     public SingleThreadCalculation(FeedForwardNet net){
         this.setNetWork(net);
     }
 
-    public ArrayList<LayerResult> getLayerResults(){
-        return layerResults;
-    }
+
     public void setNetWork(FeedForwardNet net) {
         this.net = net;
     }
@@ -31,22 +31,31 @@ public class SingleThreadCalculation implements ICalculationStrategy {
     }
 
     public FieldVector<Complex> calculate(FieldVector<Complex> input) throws SeviException{
-        this.layerResults.clear();
-        LayerResult result = new LayerResult();
-        result.setInput(input);
+        this.first = new LayerResult(input);
+        LayerResult current = first;
         for(int i = 0; i < net.getLayers().size() -1; i++) {
             Layer l = net.getLayers().get(i);
             FieldMatrix<Complex> matrix = l.getMatrixtoNextLayer();
-            FieldVector<Complex> netin = matrix.operate(result.getInput());
-            netin =  netin.mapMultiply(new Complex(1/input.getDimension()));
-            result.setNetin(netin);
-            this.layerResults.add(result);
-            result = new LayerResult();
-            result.setInput(netin);
+            FieldVector<Complex> netin = matrix.operate(current.getNetin());
+            Complex resizer = new Complex(1/(double)(current.getNetin().getDimension() +1));
+            netin =  netin.mapMultiply(resizer);
+            current = current.createNext(netin);
         }
-        return SectorHelper.moduloSector(result.getInput(),net.getSectorsCount());
+        this.last = current;
+        return SectorHelper.moduloSector(this.last.getNetin(),net.getSectorsCount());
     }
 
-
+    public LayerResult getFirst() {
+        return first;
+    }
+    public void setFirst(LayerResult first) {
+        this.first = first;
+    }
+    public LayerResult getLast() {
+        return last;
+    }
+    public void setLast(LayerResult last) {
+        this.last = last;
+    }
 
 }

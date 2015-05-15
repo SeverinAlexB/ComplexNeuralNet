@@ -3,7 +3,7 @@ package Network.Learning;
 import Data.ComplexDataset;
 import Data.Pairs.Helper.ComplexValue;
 import Data.Pairs.ComplexPair;
-import Network.Calculation.ICalculationStrategy;
+import Network.Learning.Calculation.ICalculationStrategy;
 import Network.FeedForwardNet;
 import Network.Learning.Propagation.IPropagationStrategy;
 import Network.SeviException;
@@ -71,7 +71,7 @@ public class CPULearning {
             //error = out.subtract(pair.getTarget());
             error = pair.getTarget().subtract(out);
             this.setError(error);
-            propagation.propagate(error, calculation.getLayerResults());
+            //propagation.propagate(error, calculation.getLayerResults());
         }
     }
     private void setError(FieldVector<Complex> error){

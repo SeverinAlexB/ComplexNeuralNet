@@ -20,12 +20,14 @@ public class FeedForwardNet {
     public List<Layer> getLayers(){
         return Collections.unmodifiableList(layers);
     }
-    public Layer addLayer(int neuronCount) throws SeviException{
+    public Layer addLayer(int neuronCount, boolean hasBias) throws SeviException{
+        if(layers.isEmpty() && hasBias) throw new SeviException("Bias is not allowed in the first layer");
         Layer layer = new Layer(neuronCount);
         layers.add(layer);
         if(layers.size() > 1) {
             layers.get(layers.size() -2).connectTo(layer);
         }
+        if(hasBias) layer.setBias(true);
         return layer;
     }
     public int getSectorsCount() {
