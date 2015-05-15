@@ -1,5 +1,6 @@
 package Network.Learning.Calculation;
 
+import Data.Pairs.Helper.RealValue;
 import Network.FeedForwardNet;
 import Network.Layer.Layer;
 import Network.SectorHelper;
@@ -31,6 +32,8 @@ public class SingleThreadCalculation implements ICalculationStrategy {
     }
 
     public FieldVector<Complex> calculate(FieldVector<Complex> input) throws SeviException{
+        input = addBiasToInput(input);
+
         this.first = new LayerResult(input);
         LayerResult current = first;
         for(int i = 0; i < net.getLayers().size() -1; i++) {
@@ -45,6 +48,14 @@ public class SingleThreadCalculation implements ICalculationStrategy {
         return SectorHelper.moduloSector(this.last.getNetin(),net.getSectorsCount());
     }
 
+    private FieldVector<Complex> addBiasToInput(FieldVector<Complex> input){
+        boolean inputSmallerNet = input.getDimension() == net.getLayers().get(0).getNeurons().size() -1;
+        boolean inputNeedsBias = net.getLayers().get(1).hasBias();
+        if(inputNeedsBias && inputSmallerNet) {
+            RealValue rv = new RealValue(0.9);
+            return input.append(rv.toSector(net.getSectorsCount()));
+        } else return input;
+    }
     public LayerResult getFirst() {
         return first;
     }

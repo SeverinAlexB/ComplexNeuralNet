@@ -44,13 +44,28 @@ public class SectorPair extends AbstractPair<FieldVector<Complex>> {
         return new ComplexPair(input,output);
     }
     public RealPair toReal() {
-        Double[] input = SectorValue.toReal(this.getInput(),sectorsCount);
-        Double[] output = SectorValue.toReal(this.getTarget(),sectorsCount);
+        Double[] input = SectorValue.toReal(this.getInput(), sectorsCount);
+        Double[] output = SectorValue.toReal(this.getTarget(), sectorsCount);
         try{
             return new RealPair(input,output);
         } catch(SeviException ex) {
             assert false;
             return null;
         }
+    }
+
+    public SectorPair copy() {
+        try{
+            return new SectorPair(this.getInput().copy(),this.getTarget().copy(),this.sectorsCount);
+        } catch(SeviException ex){
+            System.out.println(ex);
+            assert false;
+            return null;
+        }
+    }
+    public void addBiasToInput() {
+        RealValue rv = new RealValue(0.9);
+        FieldVector<Complex> inputBiased = this.getInput().append(rv.toSector(this.sectorsCount));
+        this.setInput(inputBiased);
     }
 }

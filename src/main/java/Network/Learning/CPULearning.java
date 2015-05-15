@@ -51,7 +51,10 @@ public class CPULearning {
         return dataset;
     }
     public void setDataset(SectorDataset dataset) {
-        this.dataset = dataset;
+        this.dataset = dataset.copy();
+        if(net.getLayers().get(1).hasBias()){
+            this.dataset.addBiasToInputs();
+        }
     }
     public double getError(){
         return this.sqrerror;

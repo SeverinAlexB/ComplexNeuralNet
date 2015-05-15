@@ -7,6 +7,8 @@ import Network.SeviException;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.linear.FieldVector;
 
+import javax.activation.DataSource;
+
 /**
  * Created by Severin on 14.05.2015.
  */
@@ -48,4 +50,21 @@ public class SectorDataset extends AbstractDataset<SectorPair> {
         }
         return rd;
     }
+    public SectorDataset copy() {
+        SectorDataset ret = new SectorDataset(this.sectorCount);
+        try{
+            for(SectorPair pair:this.getPairs()){
+                ret.add(pair.copy());
+            }
+        } catch(SeviException ex){
+            System.out.println(ex);
+        }
+        return ret;
+    }
+    public void addBiasToInputs() {
+        for(SectorPair pair:this.getPairs()){
+            pair.addBiasToInput();
+        }
+    }
+
 }

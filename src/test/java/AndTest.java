@@ -20,7 +20,7 @@ public class AndTest {
     double delta = 0.001;
     public SectorDataset getXorSet() {
         RealDataset rset = new RealDataset();
-        Double[][] in ={{0.1,0.1,0.9},{0.1,0.9,0.9},{0.9,0.1,0.9},{0.9,0.9,0.9}};
+        Double[][] in ={{0.1,0.1},{0.1,0.9},{0.9,0.1},{0.9,0.9}};
         Double[][] out = {{0.1},{0.9},{0.9},{0.1}};
         try{
             for(int i = 0; i <4; i++) {

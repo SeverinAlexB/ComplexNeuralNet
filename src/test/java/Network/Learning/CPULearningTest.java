@@ -47,10 +47,9 @@ public class CPULearningTest {
 
     private SectorDataset getInitializedSet() throws SeviException {
         FieldVector<Complex> input, target;
-        Complex[] vector = new Complex[3];
+        Complex[] vector = new Complex[2];
         vector[0] = new RealValue(0.1).toSector(5);
         vector[1] = new RealValue(0.1).toSector(5);
-        vector[2] = new RealValue(0.9).toSector(5);
         input = MatrixUtils.createFieldVector(vector);
 
         Complex[] vector2 = new Complex[1];
