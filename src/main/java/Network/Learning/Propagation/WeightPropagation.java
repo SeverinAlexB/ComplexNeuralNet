@@ -15,10 +15,7 @@ public class WeightPropagation {
     private FieldVector<Complex> myError;
     private Layer bottomLayer;
     private LayerResult result;
-    public WeightPropagation(Layer bottomLayer, LayerResult result,FieldVector<Complex> lastError) throws SeviException{
-        if(bottomLayer.getNext() == null){
-            throw new SeviException("Can't propagate top Layer");
-        }
+    public WeightPropagation(Layer bottomLayer, LayerResult result,FieldVector<Complex> lastError){
         this.lastError = lastError;
         this.result = result;
         this.bottomLayer = bottomLayer;
@@ -31,7 +28,7 @@ public class WeightPropagation {
         if(isTopMatrix) {
             this.myError = error;
         } else{
-            FieldMatrix<Complex> transposed = conjugateTranspose(bottomLayer.getMatrixtoNextLayer());
+            FieldMatrix<Complex> transposed = conjugateTranspose(bottomLayer.getNext().getMatrixtoNextLayer());
             this.myError = transposed.operate(error);
         }
     }
@@ -45,19 +42,27 @@ public class WeightPropagation {
     }
 
     public void ajustWeights(){
-        FieldMatrix<Complex> weightDiff = this.myError.outerProduct(result.getBefore().getNetin());
-        FieldMatrix<Complex> newWeights = bottomLayer.getBefore().getMatrixtoNextLayer().add(weightDiff);
+        FieldVector<Complex> conjugated = conjugate(result.getBefore().getNetin());
+        FieldMatrix<Complex> weightDiff = this.myError.outerProduct(conjugated);
+        FieldMatrix<Complex> newWeights = bottomLayer.getMatrixtoNextLayer().add(weightDiff);
         try {
-            bottomLayer.getBefore().setMatrixtoNextLayer(newWeights);
+            bottomLayer.setMatrixtoNextLayer(newWeights);
         } catch(SeviException ex){
             System.out.println(ex.toString());
             assert false;
         }
     }
-    public WeightPropagation getNext() throws SeviException {
+    public WeightPropagation getNext() {
         return new WeightPropagation(this.bottomLayer.getBefore(),this.result.getBefore(),this.myError);
     }
 
+    private FieldVector<Complex> conjugate(FieldVector<Complex> vec){
+        FieldVector<Complex> ret = vec.copy();
+            for(int y=0; y < vec.getDimension(); y++){
+                ret.setEntry(y,vec.getEntry(y).conjugate());
+            }
+        return ret;
+    }
 
 
     private FieldMatrix<Complex> conjugateTranspose(FieldMatrix<Complex> vec){

@@ -34,23 +34,21 @@ public class SingleThreadPropagation implements IPropagationStrategy {
             lp.ajustWeights();
         }
     }
-    protected ArrayList<WeightPropagation> calcLayerPropagation(FieldVector<Complex> error, LayerResult lastResult) throws SeviException {
+    protected ArrayList<WeightPropagation> calcLayerPropagation(FieldVector<Complex> error, LayerResult lastResult) {
         ArrayList<WeightPropagation> weightPropagations = new ArrayList<WeightPropagation>();
-        Layer lastLayer = net.getLayers().get(net.getLayers().size()-2);
-        LayerResult lastRes = lastResult;
+        Layer currentLayer = net.getLayers().get(net.getLayers().size()-2);
 
-        WeightPropagation lp = new WeightPropagation(lastLayer, lastResult,error);
+        WeightPropagation lp = new WeightPropagation(currentLayer, lastResult,error);
         weightPropagations.add(lp);
 
         int layersCount = 1;
-        while(lastLayer.getBefore() != null){
+        while(currentLayer.getBefore() != null){
+            currentLayer = currentLayer.getBefore();
             lp = lp.getNext();
             weightPropagations.add(lp);
 
             layersCount++;
-            if(layersCount > 10000) {
-                throw new SeviException("More than 10000 layers counted. Software failure?");
-            }
+            assert layersCount < 10000;
         }
 
         return weightPropagations;
